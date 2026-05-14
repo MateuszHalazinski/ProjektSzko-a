@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expiry Tracker MVC</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .app-container {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 500px;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h3 {
+            text-align: center;
+            color: #2c3e50;
+            margin-top: 0;
+        }
+
+        input[type="text"], input[type="date"], textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box; 
+            font-family: inherit;
+        }
+
+        textarea {
+            resize: vertical; 
+        }
+
+        #btn {
+            width: 100%;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #btn:hover {
+            background-color: #2980b9;
+        }
+
+        #counter {
+            font-weight: bold;
+            color: #7f8c8d;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 0;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; 
+            padding: 15px 10px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s;
+        }
+
+        li:hover {
+            background-color: #f9f9f9; 
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .expired { 
+            color: #e74c3c; 
+            font-weight: bold; 
+        }
+
+        .details-text { 
+            font-size: 0.85em; 
+            color: #95a5a6; 
+            margin-top: 4px;
+        }
+
+        .item-actions button {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            margin-left: 5px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .item-actions button:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="app-container">
+        <h3>🧊 Expiry Tracker</h3>
+        <input id="inputName" type="text" placeholder="Co dodajesz? (np. Mleko)">
+        <input id="inputDate" type="date">
+        <textarea id="inputDetails" rows="2" placeholder="Szczegóły (np. marka, uwaga)"></textarea>
+        
+        <button id="btn">Dodaj</button>
+        
+        <p id="counter">Liczba produktów: 0</p>
+        <ul id="list"></ul>
+    </div>
+
+    <script type="module">
+        import { Controller } from "./controller.js";
+        new Controller();
+    </script>
+</body>
+</html>
