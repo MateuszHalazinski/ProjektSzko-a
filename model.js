@@ -4,7 +4,6 @@ export class Model {
         this.load();
     }
 
-    // Dodano parametr category
     addItem(name, expiryDate, details, category) {
         this.items.push({ name: name, expiryDate: expiryDate, details: details, category: category });
         this.save();

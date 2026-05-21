@@ -3,8 +3,8 @@ export class View {
         this.inputName = document.getElementById("inputName");
         this.inputDate = document.getElementById("inputDate");
         this.inputDetails = document.getElementById("inputDetails"); 
-        this.inputCategory = document.getElementById("inputCategory"); // NOWE
-        this.filterCategory = document.getElementById("filterCategory"); // NOWE
+        this.inputCategory = document.getElementById("inputCategory"); 
+        this.filterCategory = document.getElementById("filterCategory"); 
         
         this.button = document.getElementById("btn");
         this.list = document.getElementById("list");
@@ -16,7 +16,7 @@ export class View {
             name: this.inputName.value,
             expiryDate: this.inputDate.value,
             details: this.inputDetails.value,
-            category: this.inputCategory.value // Zbieramy kategorie
+            category: this.inputCategory.value
         };
     }
 
@@ -24,7 +24,7 @@ export class View {
         this.inputName.value = "";
         this.inputDate.value = "";
         this.inputDetails.value = "";
-        this.inputCategory.value = "Inne"; // Reset na domyślną
+        this.inputCategory.value = "Inne"; 
         this.button.textContent = "Dodaj"; 
     }
 
@@ -32,7 +32,7 @@ export class View {
         this.inputName.value = name;
         this.inputDate.value = date;
         this.inputDetails.value = details || "";
-        this.inputCategory.value = category || "Inne"; // Ustawienie kategorii
+        this.inputCategory.value = category || "Inne"; 
         this.button.textContent = "Zapisz zmiany"; 
     }
 
@@ -56,7 +56,6 @@ export class View {
         });
     }
 
-    // NOWE: Funkcja nasłuchująca zmiany na dropdownie filtra
     bindFilter(handler) {
         this.filterCategory.addEventListener("change", (e) => {
             handler(e.target.value);
@@ -76,7 +75,6 @@ export class View {
             infoDiv.classList.add("item-info");
 
             const spanName = document.createElement("span");
-            // Dodajemy mały badge z kategorią przed nazwą
             const categoryHTML = `<span class="category-badge">${item.category || "Inne"}</span>`;
             spanName.innerHTML = `${categoryHTML} ${item.name} (Data: ${item.expiryDate})`;
             
@@ -97,8 +95,6 @@ export class View {
             const editBtn = document.createElement("button");
             editBtn.textContent = "✏️";
             editBtn.classList.add("edit-btn");
-            // Uwaga techniczna: w filtrach index z tablicy przefiltrowanej może nie zgadzać się z indeksem w oryginalnej bazie. 
-            // Najbezpieczniej przypisać oryginalny indeks z modelu, który obliczymy w kontrolerze.
             editBtn.dataset.index = item.originalIndex; 
 
             const deleteBtn = document.createElement("button");

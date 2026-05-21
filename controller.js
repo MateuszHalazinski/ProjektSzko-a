@@ -7,13 +7,12 @@ export class Controller {
         this.view = new View();
         
         this.editingIndex = null; 
-        this.currentFilter = "Wszystkie"; // NOWE: Zapamiętuje co teraz filtrujemy
+        this.currentFilter = "Wszystkie"; 
 
         this.view.bindAdd(() => this.handleAddOrEdit());
         this.view.bindDelete((index) => this.handleDelete(index));
         this.view.bindEdit((index) => this.handleEditClick(index));
         
-        // NOWE: Reakcja na zmianę filtra
         this.view.bindFilter((category) => {
             this.currentFilter = category;
             this.refreshList();
@@ -22,17 +21,13 @@ export class Controller {
         this.refreshList();
     }
 
-    // NOWE: Funkcja odświeżająca UI, uwzględniająca filtr
+
     refreshList() {
         let items = this.model.getItems();
-        
-        // Zapisujemy oryginalny indeks, bo po filtrowaniu pozycje w tablicy by się zmieniły, 
-        // a my musimy wiedzieć, co usunąć/edytować z bazy (Modelu)
         let processedItems = items.map((item, index) => {
             return { ...item, originalIndex: index };
         });
 
-        // Jeżeli filtr jest inny niż "Wszystkie", wycinamy tylko pasujące kategorie
         if (this.currentFilter !== "Wszystkie") {
             processedItems = processedItems.filter(item => item.category === this.currentFilter);
         }
@@ -62,7 +57,7 @@ export class Controller {
             this.model.addItem(values.name, values.expiryDate, values.details, values.category);
         }
 
-        this.refreshList(); // Zamiast ręcznego render, wołamy refreshList
+        this.refreshList(); 
         this.view.clearInput();
     }
 
