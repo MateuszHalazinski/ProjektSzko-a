@@ -6,25 +6,47 @@ export class Controller {
         this.model = new Model();
         this.view = new View();
         
-        // Zmienna trzymająca numer indeksu, jeśli jesteśmy w trybie edycji
         this.editingIndex = null; 
+        this.currentFilter = "Wszystkie"; // NOWE: Zapamiętuje co teraz filtrujemy
 
         this.view.bindAdd(() => this.handleAddOrEdit());
         this.view.bindDelete((index) => this.handleDelete(index));
         this.view.bindEdit((index) => this.handleEditClick(index));
+        
+        // NOWE: Reakcja na zmianę filtra
+        this.view.bindFilter((category) => {
+            this.currentFilter = category;
+            this.refreshList();
+        });
 
-        this.view.render(this.model.getItems());
-        this.view.updateCounter(this.model.count());
+        this.refreshList();
     }
 
-    // Odpala się po kliknięciu ikonki oówka
+    // NOWE: Funkcja odświeżająca UI, uwzględniająca filtr
+    refreshList() {
+        let items = this.model.getItems();
+        
+        // Zapisujemy oryginalny indeks, bo po filtrowaniu pozycje w tablicy by się zmieniły, 
+        // a my musimy wiedzieć, co usunąć/edytować z bazy (Modelu)
+        let processedItems = items.map((item, index) => {
+            return { ...item, originalIndex: index };
+        });
+
+        // Jeżeli filtr jest inny niż "Wszystkie", wycinamy tylko pasujące kategorie
+        if (this.currentFilter !== "Wszystkie") {
+            processedItems = processedItems.filter(item => item.category === this.currentFilter);
+        }
+
+        this.view.render(processedItems);
+        this.view.updateCounter(processedItems.length);
+    }
+
     handleEditClick(index) {
-        this.editingIndex = index; // Zapisujemy, który element edytujemy
+        this.editingIndex = index; 
         const item = this.model.getItems()[index];
-        this.view.setFormForEdit(item.name, item.expiryDate, item.details); // Wrzucamy do formularza
+        this.view.setFormForEdit(item.name, item.expiryDate, item.details, item.category);
     }
 
-    // Odpala się po kliknięciu przycisku Dodaj / Zapisz zmiany
     handleAddOrEdit() {
         const values = this.view.getInputValue();
 
@@ -34,28 +56,24 @@ export class Controller {
         }
 
         if (this.editingIndex !== null) {
-            // TRYB EDYCJI: Podmieniamy stare dane
-            this.model.editItem(this.editingIndex, values.name, values.expiryDate, values.details);
-            this.editingIndex = null; // Wychodzimy z trybu edycji
+            this.model.editItem(this.editingIndex, values.name, values.expiryDate, values.details, values.category);
+            this.editingIndex = null; 
         } else {
-            // TRYB DODAWANIA: Tworzymy nowy produkt
-            this.model.addItem(values.name, values.expiryDate, values.details);
+            this.model.addItem(values.name, values.expiryDate, values.details, values.category);
         }
 
-        this.view.render(this.model.getItems());
-        this.view.updateCounter(this.model.count());
+        this.refreshList(); // Zamiast ręcznego render, wołamy refreshList
         this.view.clearInput();
     }
 
     handleDelete(index) {
         this.model.removeItem(index);
-        this.view.render(this.model.getItems());
-        this.view.updateCounter(this.model.count());
         
-        // Zabezpieczenie: jeśli usuwamy element, który właśnie edytujemy, przerwij edycję
         if(this.editingIndex == index) {
             this.editingIndex = null;
             this.view.clearInput();
         }
+        
+        this.refreshList();
     }
 }

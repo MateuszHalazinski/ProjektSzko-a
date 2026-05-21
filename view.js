@@ -3,38 +3,44 @@ export class View {
         this.inputName = document.getElementById("inputName");
         this.inputDate = document.getElementById("inputDate");
         this.inputDetails = document.getElementById("inputDetails"); 
+        this.inputCategory = document.getElementById("inputCategory"); // NOWE
+        this.filterCategory = document.getElementById("filterCategory"); // NOWE
+        
         this.button = document.getElementById("btn");
         this.list = document.getElementById("list");
         this.counter = document.getElementById("counter");
     }
 
-    getInputValue() { //Odsłyanie danych do kontrolera
+    getInputValue() { 
         return {
             name: this.inputName.value,
             expiryDate: this.inputDate.value,
-            details: this.inputDetails.value 
+            details: this.inputDetails.value,
+            category: this.inputCategory.value // Zbieramy kategorie
         };
     }
 
-    clearInput() { //Czyszczenia danych z formularza
+    clearInput() { 
         this.inputName.value = "";
         this.inputDate.value = "";
         this.inputDetails.value = "";
+        this.inputCategory.value = "Inne"; // Reset na domyślną
         this.button.textContent = "Dodaj"; 
     }
 
-    setFormForEdit(name, date, details) { //Pobieranie danych do edycji
+    setFormForEdit(name, date, details, category) { 
         this.inputName.value = name;
         this.inputDate.value = date;
         this.inputDetails.value = details || "";
+        this.inputCategory.value = category || "Inne"; // Ustawienie kategorii
         this.button.textContent = "Zapisz zmiany"; 
     }
 
-    bindAdd(handler) { //Nasłuchiwanie głównego przycisku
+    bindAdd(handler) { 
         this.button.addEventListener("click", handler);
     }
 
-    bindDelete(handler) { //Przycisk delete
+    bindDelete(handler) { 
         this.list.addEventListener("click", (e) => {
             if (e.target.classList.contains("delete-btn")) {
                 handler(e.target.dataset.index);
@@ -42,11 +48,18 @@ export class View {
         });
     }
 
-    bindEdit(handler) { //Przycisk eddit
+    bindEdit(handler) { 
         this.list.addEventListener("click", (e) => {
             if (e.target.classList.contains("edit-btn")) {
                 handler(e.target.dataset.index);
             }
+        });
+    }
+
+    // NOWE: Funkcja nasłuchująca zmiany na dropdownie filtra
+    bindFilter(handler) {
+        this.filterCategory.addEventListener("change", (e) => {
+            handler(e.target.value);
         });
     }
 
@@ -55,54 +68,55 @@ export class View {
         const today = new Date();
         today.setHours(0,0,0,0); 
 
-    items.forEach((item, index) => {
-    const li = document.createElement("li");
-    const itemDate = new Date(item.expiryDate);
+        items.forEach((item, index) => {
+            const li = document.createElement("li");
+            const itemDate = new Date(item.expiryDate);
 
-    // Kontener na teksty (nazwa + szczgóły)
-    const infoDiv = document.createElement("div");
-    infoDiv.classList.add("item-info");
+            const infoDiv = document.createElement("div");
+            infoDiv.classList.add("item-info");
 
-    const spanName = document.createElement("span");
-    spanName.textContent = `${item.name} (Data: ${item.expiryDate})`;
-    if (itemDate < today) {
-        spanName.classList.add("expired"); // Czerwony kolor 
-    }
+            const spanName = document.createElement("span");
+            // Dodajemy mały badge z kategorią przed nazwą
+            const categoryHTML = `<span class="category-badge">${item.category || "Inne"}</span>`;
+            spanName.innerHTML = `${categoryHTML} ${item.name} (Data: ${item.expiryDate})`;
+            
+            if (itemDate < today) {
+                spanName.classList.add("expired"); 
+            }
 
-    const spanDetails = document.createElement("span");
-    spanDetails.classList.add("details-text");
-    spanDetails.textContent = item.details ? item.details : "";
+            const spanDetails = document.createElement("span");
+            spanDetails.classList.add("details-text");
+            spanDetails.textContent = item.details ? item.details : "";
 
-    //Składnie diva w całość
-    infoDiv.appendChild(spanName);
-    infoDiv.appendChild(spanDetails);
+            infoDiv.appendChild(spanName);
+            infoDiv.appendChild(spanDetails);
 
-    // Kontener na przyciski akcji
-    const actionDiv = document.createElement("div");
-    actionDiv.classList.add("item-actions");
+            const actionDiv = document.createElement("div");
+            actionDiv.classList.add("item-actions");
 
-    const editBtn = document.createElement("button");
-    editBtn.textContent = "✏️";
-    editBtn.classList.add("edit-btn");
-    editBtn.dataset.index = index;
+            const editBtn = document.createElement("button");
+            editBtn.textContent = "✏️";
+            editBtn.classList.add("edit-btn");
+            // Uwaga techniczna: w filtrach index z tablicy przefiltrowanej może nie zgadzać się z indeksem w oryginalnej bazie. 
+            // Najbezpieczniej przypisać oryginalny indeks z modelu, który obliczymy w kontrolerze.
+            editBtn.dataset.index = item.originalIndex; 
 
-    const deleteBtn = document.createElement("button");
-    deleteBtn.textContent = "❌";
-    deleteBtn.classList.add("delete-btn");
-    deleteBtn.dataset.index = index;
+            const deleteBtn = document.createElement("button");
+            deleteBtn.textContent = "❌";
+            deleteBtn.classList.add("delete-btn");
+            deleteBtn.dataset.index = item.originalIndex;
 
-    actionDiv.appendChild(editBtn);
-    actionDiv.appendChild(deleteBtn);
+            actionDiv.appendChild(editBtn);
+            actionDiv.appendChild(deleteBtn);
 
-    // Składanie LI w całość
-    li.appendChild(infoDiv);
-    li.appendChild(actionDiv);
+            li.appendChild(infoDiv);
+            li.appendChild(actionDiv);
 
-    this.list.appendChild(li);
-});
+            this.list.appendChild(li);
+        });
     }
 
     updateCounter(count) {
-        this.counter.textContent = "Liczba produktów: " + count;
+        this.counter.textContent = "Liczba: " + count;
     }
 }

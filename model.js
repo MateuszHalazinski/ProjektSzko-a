@@ -4,13 +4,14 @@ export class Model {
         this.load();
     }
 
-    addItem(name, expiryDate, details) {
-        this.items.push({ name: name, expiryDate: expiryDate, details: details });
+    // Dodano parametr category
+    addItem(name, expiryDate, details, category) {
+        this.items.push({ name: name, expiryDate: expiryDate, details: details, category: category });
         this.save();
     }
     
-    editItem(index, name, expiryDate, details) {
-        this.items[index] = { name: name, expiryDate: expiryDate, details: details };
+    editItem(index, name, expiryDate, details, category) {
+        this.items[index] = { name: name, expiryDate: expiryDate, details: details, category: category };
         this.save();
     }
 
